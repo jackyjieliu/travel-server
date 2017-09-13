@@ -14,9 +14,9 @@ export async function handler(params: Params, res: express.Response) {
 
   const pictureResult = await locationDetailService.getPicture(photoReference, 300);
 
-  // res.writeHead(200, pictureResult.headers);
-  res.writeHead(200, {'Content-Type': 'image/jpeg' });
+  res.writeHead(200, { 'Content-Type': 'image/jpeg' });
   res.end(new Buffer(pictureResult.body));
+  // res.send({});
 }
 
 export function inputValidation(req: express.Request): Params | undefined {

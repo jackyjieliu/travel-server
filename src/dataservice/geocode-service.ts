@@ -4,6 +4,7 @@
 
 import * as NodeGeocoder from 'node-geocoder';
 import * as _ from 'lodash';
+import * as cache from '../utils/cache';
 
 const openStreetMapOptions = {
   provider: 'openstreetmap'
@@ -12,6 +13,18 @@ const openStreetMapOptions = {
 const openStreetMapGeocoder = NodeGeocoder(openStreetMapOptions);
 
 export async function geocoder(q: string): Promise<{ lat: number; lng: number; place: string; }> {
+  const key = 'geocode:' + q + ', US';
+  const cached = await cache.get(key);
+
+  if (cached) {
+    try {
+      console.log('Return from cache', { key, cached });
+      return JSON.parse(cached);
+    } catch (e) {
+      // no op
+    }
+  }
+
   const results = await openStreetMapGeocoder.geocode(q + ', US');
   const result = _findResult(results);
   if (!result) {
@@ -22,11 +35,15 @@ export async function geocoder(q: string): Promise<{ lat: number; lng: number; p
 
   console.log('geocode for ' + q + ' is lat: ' + lat + ', lng: ' + lng);
 
-  return {
+  const r = {
     lat: Number(lat),
     lng: Number(lng),
     place: result.city + ',' + result.state + ',' + result.country
   };
+
+  cache.set(key, JSON.stringify(r));
+
+  return r;
 }
 
 interface Geocode {

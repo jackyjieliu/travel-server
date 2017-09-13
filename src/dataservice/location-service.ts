@@ -1,9 +1,9 @@
-import mongoDbPromise from '../database/travel';
+import getConnection from '../database/travel';
 import * as placesModel from '../database/places-model';
 import * as _ from 'lodash';
 
 export async function geoWithin(lat: number, lng: number, radius: number): Promise<placesModel.Place[]> {
-  const db = await mongoDbPromise;
+  const db = await getConnection();
 
   return new Promise<placesModel.Place[]>((resolve, reject) => {
     const query = {

@@ -37,6 +37,7 @@
     "mongodb": "^2.2.31",
     "morgan": "^1.8.2",
     "node-geocoder": "^3.20.0",
+    "redis": "^2.8.0",
     "request": "^2.81.0"
   }
 }
