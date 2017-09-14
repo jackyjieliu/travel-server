@@ -32,8 +32,11 @@ function getClient() {
   return client;
 }
 
-export function set(key: string, data: any) {
-  getClient().set(key, data);
+export function set(key: string, data: any, expirationInSeconds?: number) {
+  if (expirationInSeconds === undefined) {
+    expirationInSeconds = EXPIRATION.TWENTY_FIVE_DAYS;
+  }
+  getClient().set(key, data, 'EX', expirationInSeconds);
 }
 
 export function get(key: string): void | any {
@@ -55,3 +58,7 @@ export function flush() {
     console.log('redis cache flushed', { succeeded: !!succeeded });
   });
 }
+
+export const EXPIRATION = {
+  TWENTY_FIVE_DAYS: 25 * 86400 // twenty five days in seconds.
+};
