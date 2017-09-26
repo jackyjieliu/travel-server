@@ -1,4 +1,5 @@
 import * as locationDetailService from '../dataservice/location-detail-service';
+import * as flickrPhotoService from '../dataservice/flickr-photo-service';
 import * as express from 'express';
 import * as _ from 'lodash';
 
@@ -21,10 +22,14 @@ export async function handler(params: Params, res: express.Response) {
       const thingsToDo = await thingsToDoP;
       const details = await detailsP;
 
+      const coord = details.geometry.location;
+      const photos = await flickrPhotoService.getPhoto(coord.lat, coord.lng);
+
       locations.push({
         name: place,
         pointsOfInterest: thingsToDo,
-        details
+        details,
+        photos
       });
   }
 
@@ -32,7 +37,11 @@ export async function handler(params: Params, res: express.Response) {
 }
 
 export function inputValidation(req: express.Request): Params | undefined {
-  const places = _.get(req, 'query.places');
+  let places = _.get(req, 'query.places');
+
+  if (_.isString(places)) {
+    places = [places];
+  }
 
   if (_.isArray(places) && places.length > 0) {
     return {

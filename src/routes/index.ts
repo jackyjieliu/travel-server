@@ -2,6 +2,8 @@ import * as express from 'express';
 import * as searchPlaces from './search-places';
 import * as placesDetails from './places-details';
 import * as images from './images';
+import * as place from './place';
+import * as around from './around';
 
 interface Route {
   method: string;
@@ -20,7 +22,7 @@ const helloWorldRoute: Route = {
   }
 };
 
-const routes = [helloWorldRoute, searchPlaces, placesDetails, images] as Route[];
+const routes = [helloWorldRoute, searchPlaces, placesDetails, images, place, around] as Route[];
 
 export function bindRoutes(router: express.Router) {
   routes.forEach((route) => {
