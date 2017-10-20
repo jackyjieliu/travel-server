@@ -4,6 +4,8 @@ import * as placesDetails from './places-details';
 import * as images from './images';
 import * as place from './place';
 import * as around from './around';
+// import * as adminAdd from './admin-add';
+// import * as adminAddPlace from './admin-add-place';
 
 interface Route {
   method: string;
@@ -22,7 +24,8 @@ const helloWorldRoute: Route = {
   }
 };
 
-const routes = [helloWorldRoute, searchPlaces, placesDetails, images, place, around] as Route[];
+const routes = [helloWorldRoute, searchPlaces, placesDetails, images, place,
+  around] as Route[];
 
 export function bindRoutes(router: express.Router) {
   routes.forEach((route) => {
@@ -41,6 +44,7 @@ export function bindRoutes(router: express.Router) {
       // Catch error if it is a promise
       if (promise && promise.catch) {
         promise.catch((e) => {
+          console.log('e', e);
           res.status(500).send({ error: e });
         });
       }

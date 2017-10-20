@@ -14,8 +14,9 @@ export const path = '/places';
 export async function handler(params: Params, res: express.Response) {
   const { query, days } = params;
   const radius = estimateDistance.driving(days);
+  const min = estimateDistance.driving(1) / 8;
   const { lat, lng, place } = await geocodeService.geocoder(query);
-  const locations = await locationService.geoWithin(lat, lng, radius);
+  const locations = await locationService.geoWithin(lat, lng, radius, { min });
 
   // TODO: prefetch when cache is implemented.
 

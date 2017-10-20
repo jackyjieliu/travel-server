@@ -13,7 +13,8 @@ const openStreetMapOptions = {
 const openStreetMapGeocoder = NodeGeocoder(openStreetMapOptions);
 
 export async function geocoder(q: string): Promise<{ lat: number; lng: number; place: string; }> {
-  const key = 'geocode:' + q + ', US';
+  q = q + ', USA';
+  const key = 'geocode:' + q;
   const cached = await cache.get(key);
 
   if (cached) {
@@ -25,7 +26,7 @@ export async function geocoder(q: string): Promise<{ lat: number; lng: number; p
     }
   }
 
-  const results = await openStreetMapGeocoder.geocode(q + ', US');
+  const results = await openStreetMapGeocoder.geocode(q);
   const result = _findResult(results);
   if (!result) {
     throw new Error('Error geocoding');

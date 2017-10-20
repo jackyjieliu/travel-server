@@ -14,11 +14,12 @@ function _makeFlickrRequest(params: { [key: string]: any }) {
   return reqeust.get(url, qs);
 }
 
-async function _searchGeo(lat: number, lng: number): Promise<any> {
+async function _searchGeo(lat: number, lng: number, count: number = 5): Promise<any> {
   const params = {
     method: 'flickr.photos.search',
     privacy_filter: 1,
-    accuracy: 10,
+    // accuracy: 10,
+    accuracy: 6,
     lat,
     lon: lng,
     // tags: 'landscape,nature,city,beach,water,scenery',
@@ -31,15 +32,15 @@ async function _searchGeo(lat: number, lng: number): Promise<any> {
     // sort: 'relevance',
     // sort: 'interestingness-asc',
     // sort: 'interestingness-desc',
-    per_page: 5
+    per_page: count
   };
   const response = await _makeFlickrRequest(params);
   return _.get(response, 'photos.photo');
 }
 
-export async function getPhoto(lat: number, lng: number) {
+export async function getPhoto(lat: number, lng: number, count: number = 5) {
   const PHOTO_URL_TEMPLATE = 'https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}.jpg';
-  const photos = await _searchGeo(lat, lng);
+  const photos = await _searchGeo(lat, lng, count);
   const photoUrls = _.map(photos, (photo: any) => {
     return PHOTO_URL_TEMPLATE
       .replace('{farm-id}', photo.farm)

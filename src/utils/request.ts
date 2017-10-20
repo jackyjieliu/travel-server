@@ -61,11 +61,14 @@ function cacheResponse({ uri, qs, body, rawResponse }: CacheKeyParams, result: a
   }
 }
 
-export function raw(method: string, rawResponse: boolean, uri: string, qs?: any, body?: any): Promise<any> {
+export function raw(method: string, rawResponse: boolean, uri: string, qs?: any, body?: any, doNotCache?: boolean)
+  : Promise<any> {
+
   return new Promise(async (resolve, reject) => {
+    const useCache = !doNotCache;
     const encoding = rawResponse ? null : undefined;
 
-    const cacheResult = await _checkCache({ uri, qs, body, rawResponse });
+    const cacheResult = useCache ? await _checkCache({ uri, qs, body, rawResponse }) : undefined;
     if (cacheResult) {
       console.log('returning from cache', { cached: cacheResult });
       resolve(cacheResult);
@@ -86,7 +89,9 @@ export function raw(method: string, rawResponse: boolean, uri: string, qs?: any,
             }
           }
 
-          cacheResponse({ uri, qs, body, rawResponse }, j);
+          if (useCache) {
+            cacheResponse({ uri, qs, body, rawResponse }, j);
+          }
           if (rawResponse) {
             console.log('Request Success');
           } else {
