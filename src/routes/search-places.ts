@@ -1,10 +1,12 @@
 import * as express from 'express';
 import * as _ from 'lodash';
-import * as locationService from '../dataservice/location-service';
+import * as geoSearch from '../algo/geo-search';
 import * as geocodeService from '../dataservice/geocode-service';
-import * as estimateDistance from '../utils/estimateDistance';
+
 interface Params {
-  query: string;
+  query?: string;
+  lat?: number;
+  lng?: number;
   days: number;
 }
 
@@ -13,24 +15,39 @@ export const path = '/places';
 
 export async function handler(params: Params, res: express.Response) {
   const { query, days } = params;
-  const radius = estimateDistance.driving(days);
-  const min = estimateDistance.driving(1) / 8;
-  const { lat, lng, place } = await geocodeService.geocoder(query);
-  const locations = await locationService.geoWithin(lat, lng, radius, { min });
+  let { lat, lng } = params;
+  let place = 'your current location';
+  if (query) {
+    const decoded = await geocodeService.geocoder(query);
+    lat = decoded.lat;
+    lng = decoded.lng;
+    place = decoded.place;
+  }
+
+  const locations = await geoSearch.search(lat, lng, days);
 
   // TODO: prefetch when cache is implemented.
-
-  res.json({ locations, place });
+  res.json({ locations: locations.slice(0, 10), place });
 }
 
 export function inputValidation(req: express.Request): Params | undefined {
-  const query = _.get(req, 'query.query');
+  const query = String(_.get(req, 'query.query', ''));
   const days =  Number(_.get(req, 'query.days'));
+  const lat =  Number(_.get(req, 'query.lat'));
+  const lng =  Number(_.get(req, 'query.lng'));
 
-  if (!query || !days) {
+  if (!days) {
     return undefined;
   }
+
+  if (!query && (!lat || !lng)) {
+    return undefined;
+  }
+
   return {
-    query: String(query), days
+    query,
+    days,
+    lat,
+    lng
   };
 }

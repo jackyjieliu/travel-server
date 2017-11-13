@@ -1,5 +1,5 @@
 import * as redis from 'redis';
-let client;
+let client: redis.RedisClient;
 getClient();
 function getClient() {
   if (client) {
@@ -8,8 +8,23 @@ function getClient() {
   // client = redis.createClient({ port: 6379, host: 'http://localhost' });
   client = redis.createClient({ url: 'redis://localhost:6379', detect_buffers: true });
 
-  client.on('end', () => {
+  const errorListener = (err) => {
+    console.log('Redis error', { err });
+  };
+  client.on('error', errorListener);
+
+  const connectListener = () => {
+    console.log('Connected to Redis');
+    // flush();
+  };
+  client.on('connect', connectListener);
+
+  const endListener = () => {
     console.log('Redis connection lost');
+
+    // TODO: this does not work
+    // client.removeListener('error', errorListener);
+    // client.removeListener('connect', connectListener);
 
     client = undefined;
     setTimeout(
@@ -18,17 +33,9 @@ function getClient() {
       },
       1000
     );
-  });
+  };
+  client.once('end', endListener);
 
-  client.on('error', (err) => {
-    console.log('Redis error', { err });
-  });
-
-  client.on('connect', () => {
-    console.log('Connected to Redis');
-
-    // flush();
-  });
   return client;
 }
 

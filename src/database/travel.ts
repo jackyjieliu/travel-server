@@ -36,7 +36,7 @@ function getConnection() {
     });
 
     connectionPromise.then((db) => {
-      db.on('close', () => {
+      db.once('close', () => {
         console.log('Disconnected from mongodb');
         connectionPromise = undefined;
         setTimeout(

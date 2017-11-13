@@ -1,6 +1,8 @@
-export function fromDb(dbRecord: { _id: string, c: [number, number], n: string}): Place {
+import * as mongodb from 'mongodb';
+
+export function fromDb(dbRecord: { _id: mongodb.ObjectID, c: [number, number], n: string}): Place {
   return {
-    id: dbRecord._id,
+    id: dbRecord._id.toHexString(),
     coordinate: {
       lng: dbRecord.c[0],
       lat: dbRecord.c[1],
