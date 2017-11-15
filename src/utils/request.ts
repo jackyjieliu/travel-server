@@ -61,20 +61,25 @@ function cacheResponse({ uri, qs, body, rawResponse }: CacheKeyParams, result: a
   }
 }
 
-export function raw(method: string, rawResponse: boolean, uri: string, qs?: any, body?: any, doNotCache?: boolean)
-  : Promise<any> {
+export function raw(
+  method: string, rawResponse: boolean, uri: string, qs?: any, body?: any, headers?: any, doNotCache?: boolean
+): Promise<any> {
 
   return new Promise(async (resolve, reject) => {
     const useCache = !doNotCache;
     const encoding = rawResponse ? null : undefined;
 
-    const cacheResult = useCache ? await _checkCache({ uri, qs, body, rawResponse }) : undefined;
+    let cacheResult;
+    if (useCache) {
+      cacheResult = await _checkCache({ uri, qs, body, rawResponse });
+    }
+
     if (cacheResult) {
       console.log('returning from cache', { cached: cacheResult });
       resolve(cacheResult);
     } else {
       console.log('Making Request', { method, uri, qs, body, encoding });
-      request({ method, uri, qs, body, encoding }, (e, res) => {
+      request({ method, uri, qs, body, encoding, headers }, (e, res) => {
         if (e) {
           console.log('Request Error', { e });
           reject(e);
@@ -106,4 +111,8 @@ export function raw(method: string, rawResponse: boolean, uri: string, qs?: any,
 
 export function get(url: string, qs?: any) {
   return raw('GET', false, url, qs);
+}
+
+export function post(url: string, body?: any, headers?: any, doNotCache?: boolean) {
+  return raw('POST', true, url, undefined, body, headers, doNotCache);
 }

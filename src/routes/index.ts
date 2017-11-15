@@ -4,6 +4,7 @@ import * as placesDetails from './places-details';
 import * as images from './images';
 import * as place from './place';
 import * as around from './around';
+import * as feedback from './feedback';
 // import * as adminAdd from './admin-add';
 // import * as adminAddPlace from './admin-add-place';
 
@@ -25,7 +26,7 @@ const helloWorldRoute: Route = {
 };
 
 const routes = [helloWorldRoute, searchPlaces, placesDetails, images, place,
-  around] as Route[];
+  around, feedback] as Route[];
 
 export function bindRoutes(router: express.Router) {
   routes.forEach((route) => {

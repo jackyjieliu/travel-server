@@ -27,7 +27,7 @@ export async function handler(params: Params, res: express.Response) {
   const locations = await geoSearch.search(lat, lng, days);
 
   // TODO: prefetch when cache is implemented.
-  res.json({ locations: locations.slice(0, 10), place });
+  res.json({ locations: locations.slice(0, 10), place, days });
 }
 
 export function inputValidation(req: express.Request): Params | undefined {
