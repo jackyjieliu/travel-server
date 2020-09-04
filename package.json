@@ -36,7 +36,7 @@
     "express": "^4.15.4",
     "geolib": "^2.0.23",
     "lodash": "^4.17.4",
-    "mongodb": "^2.2.31",
+    "mongodb": "^3.6.1",
     "morgan": "^1.8.2",
     "node-geocoder": "^3.20.0",
     "redis": "^2.8.0",
